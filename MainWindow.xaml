@@ -1,0 +1,45 @@
+﻿<Window x:Class="TQC.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TQC"
+        mc:Ignorable="d"
+        Title="TQC" Height="720" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="35*"/>
+            <ColumnDefinition Width="757*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Outer view" HorizontalAlignment="Left" Margin="10,10,0,383" Grid.ColumnSpan="2" RenderTransformOrigin="0.428,0.103"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="320" Margin="10,36,0,0" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2">
+            <Image Name="outerVdo"/>
+        </Border>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="320" Margin="427,36,0,0" VerticalAlignment="Top" Width="320" Grid.Column="1">
+            <Image Name="innerVdo"/>
+        </Border>
+        <Label Content="Inner view" Grid.Column="1" HorizontalAlignment="Left" Margin="427,10,0,0" VerticalAlignment="Top"/>
+        <Button Content="Record" HorizontalAlignment="Left" Margin="10,464,0,0" VerticalAlignment="Top" Width="75" Click="RecordOuter_Click" Grid.ColumnSpan="2" Name="RecordOuter"/>
+        <Button Content="Record" HorizontalAlignment="Left" Margin="427,464,0,0" VerticalAlignment="Top" Width="75" Grid.Column="1" RenderTransformOrigin="0.88,-0.45" Click="RecordInner_Click" Name="RecordInner"/>
+        <CheckBox Content="No moulds" Grid.Column="1" HorizontalAlignment="Left" Margin="300,101,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox Content="No cracks" Grid.Column="1" HorizontalAlignment="Left" Margin="300,121,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox Content="No bubbles" Grid.Column="1" HorizontalAlignment="Left" Margin="300,141,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox Content="Verified inflating" Grid.Column="1" HorizontalAlignment="Left" Margin="300,161,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox Content="Verified deflating" Grid.Column="1" HorizontalAlignment="Left" Margin="300,181,0,0" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <TextBox Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="300,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="122" Name="SerialNo"/>
+        <Label Content="Serial No." Grid.Column="1" HorizontalAlignment="Left" Margin="300,39,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.486,0.974"/>
+        <Button Content="Save" Grid.Column="1" HorizontalAlignment="Left" Margin="300,286,0,0" VerticalAlignment="Top" Width="122" Click="Save_Click"/>
+        <Button Content="Clear" Grid.Column="1" HorizontalAlignment="Left" Margin="300,311,0,0" VerticalAlignment="Top" Width="122" Click="Clear_Click"/>
+        <Button Content="Upload" Grid.Column="1" HorizontalAlignment="Left" Margin="300,336,0,0" VerticalAlignment="Top" Width="122" Click="Upload_Click"/>
+        <CheckBox Content="Use jpeg stream" HorizontalAlignment="Left" Margin="10,444,0,0" VerticalAlignment="Top" Width="145" Checked="UseOuterJpeg" Name="outerJpeg" Grid.ColumnSpan="2"/>
+        <CheckBox Content="Use jpeg stream" HorizontalAlignment="Left" Margin="427,444,0,0" VerticalAlignment="Top" Width="145" Grid.Column="1" Checked="UseInnerJpeg" Name="innerJpeg"/>
+        <ComboBox Name="vdoOuterDeviceList" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" SelectionChanged="vdoOuterDeviceList_SelectionChanged">
+        </ComboBox>
+        <ComboBox x:Name="vdoInnerDeviceList" HorizontalAlignment="Left" Margin="427,364,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="vdoInnerDeviceList_SelectionChanged" Grid.Column="1"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="10,416,0,0" TextWrapping="Wrap" Text="http://localhost:8800/lapcam/poll.php" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2" Name="outerIPCamUrl"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="427,416,0,0" TextWrapping="Wrap" Text="Inner ip cam url" VerticalAlignment="Top" Width="320" x:Name="innerIPCamUrl" Grid.Column="1"/>
+        <Button Content="Stop" Grid.Column="1" HorizontalAlignment="Left" Margin="55,464,0,0" VerticalAlignment="Top" Width="75" Name="StopOuter"/>
+        <Button Content="Stop" Grid.Column="1" HorizontalAlignment="Left" Margin="507,464,0,0" VerticalAlignment="Top" Width="75" Name="StopInner"/>
+
+    </Grid>
+</Window>
