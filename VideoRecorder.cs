@@ -15,22 +15,34 @@ namespace TQC
 
         public bool RecordingStarted()
         {
-            return _recording;
+            return this._recording;
         }
 
         public void StopRecording()
         {
-            this._recording = false;
-            _writer.Close();
-            _writer.Dispose();
+            lock (this)
+            {
+                _writer.Close();
+                _writer.Dispose();
+                this._recording = false;
+            }
         }
 
         public void NewRecording(string fileName, int width, int height, double frameRate)
         {
-            this._writer = new VideoFileWriter();
-            fileName = @"F:\Projects\L.TYREQC\Code\Recordings\"+ fileName;
-            this._recording = true;
-            this._writer.Open(fileName, width, height);
+            try
+            {
+                this._writer = new VideoFileWriter();
+                fileName = @"F:\Projects\L.TYREQC\Code\Recordings\" + fileName;
+                //cannot provide the video type .mp4 that throws some exception in accord.
+                //cannot specify h264 encoding in accord that already has a recording issue.
+                this._recording = true;
+                this._writer.Open(fileName, width, height);
+            }
+            catch (Exception ex)
+            { 
+                throw ex;
+            }
         }
 
         public void RecordVideo(Bitmap frame)

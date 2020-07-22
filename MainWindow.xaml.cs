@@ -92,6 +92,7 @@ namespace TQC
                     if (outerMjpegStream != null && outerMjpegStream.IsRunning)
                     {
                         outerMjpegStream.Stop();
+                        recOuterVdo?.StopRecording();
                         RecordOuter.Content = "Record";
                     }
                     else
@@ -124,38 +125,52 @@ namespace TQC
 
         private void RecordInner_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)innerJpeg.IsChecked)
+            if (string.IsNullOrEmpty(SerialNo.Text))
             {
-                if (innerJpegStream != null && innerJpegStream.IsRunning)
-                {
-                    innerJpegStream.Stop();
-                    RecordInner.Content = "Record";
-                }
-                else
-                {
-                    innerJpegStream = new JPEGStream(innerIPCamUrl.Text);
-                    StartStreamingForInner(innerJpegStream);
-                    RecordInner.Content = "Stop";
-                }
+                MessageBox.Show("Enter serial number");
             }
-            else // UseMJpegStream
+            else
             {
-                if (innerMjpegStream != null && innerMjpegStream.IsRunning)
+                if ((bool)innerJpeg.IsChecked)
                 {
-                    innerMjpegStream.Stop();
-                    RecordInner.Content = "Record";
+                    if (innerJpegStream != null && innerJpegStream.IsRunning)
+                    {
+                        innerJpegStream.Stop();
+                        recInnerVdo?.StopRecording();
+                        RecordInner.Content = "Record";
+                    }
+                    else
+                    {
+                        innerJpegStream = new JPEGStream(innerIPCamUrl.Text);
+                        StartStreamingForInner(innerJpegStream);
+                        RecordInner.Content = "Stop";
+                    }
                 }
-                else
+                else // UseMJpegStream
                 {
-                    innerMjpegStream = new MJPEGStream(innerIPCamUrl.Text);
-                    StartStreamingForInner(innerMjpegStream);
-                    RecordInner.Content = "Stop";
+                    if (innerMjpegStream != null && innerMjpegStream.IsRunning)
+                    {
+                        innerMjpegStream.Stop();
+                        recInnerVdo?.StopRecording();
+                        RecordInner.Content = "Record";
+                    }
+                    else
+                    {
+                        innerMjpegStream = new MJPEGStream(innerIPCamUrl.Text);
+                        StartStreamingForInner(innerMjpegStream);
+                        RecordInner.Content = "Stop";
+                    }
                 }
             }
         }
 
         private void StartStreamingForInner(JPEGStream _videoSource)
         {
+            if (recInnerVdo == null || !recInnerVdo.RecordingStarted())
+            {
+                recInnerVdo = new VideoRecorder();
+                recInnerVdo.SerialNumber = SerialNo.Text;
+            }
             _videoSource.NewFrame += new NewFrameEventHandler(innervideo_NewFrame);
             _videoSource.Start();
         }
@@ -192,16 +207,118 @@ namespace TQC
             return false;
         }
 
-        private void outervideo_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        private void StopOuter_Click(object sender, RoutedEventArgs e)
         {
-            if (!recOuterVdo.RecordingStarted())
+
+        }
+
+        /// <summary>
+        /// function to initiate outer cam feed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RecordOuterCamFeed_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(SerialNo.Text))
             {
-                recOuterVdo.NewRecording("OV_" + recOuterVdo.SerialNumber, eventArgs.Frame.Width, eventArgs.Frame.Height, 15.0);
-                recOuterVdo.RecordVideo(eventArgs.Frame);//first frame
+                MessageBox.Show("Enter serial number");
             }
             else
             {
-                recOuterVdo.RecordVideo(eventArgs.Frame);//independent thread to record the video from streamed bitmap frame.
+                try
+                {
+                    if (recOuterVdo != null)
+                    {
+                        RecordOuterCamFeed.Content = "Record cam feed";
+                        recOuterVdo?.StopRecording();
+                        recOuterVdo = null;
+                    }
+                    else
+                    {
+
+                        if (CheckAlreadyExisting())
+                        {
+                            innerVdoSource?.Stop();
+                            innerVdoSource = null;
+                        }
+                        if (recOuterVdo == null || !recOuterVdo.RecordingStarted())
+                        {
+                            recOuterVdo = new VideoRecorder();
+                            recOuterVdo.SerialNumber = SerialNo.Text;
+                        }
+                        var videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+                        outerVdoSource = new VideoCaptureDevice(videoDevicesList[vdoOuterDeviceList.SelectedIndex].MonikerString);
+                        outerVdoSource.NewFrame += new NewFrameEventHandler(outervideo_NewFrame);
+                        outerVdoSource.Start();
+                        RecordOuterCamFeed.Content = "Recording... (Click to stop)";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    RecordOuterCamFeed.Content = "Record cam feed";
+                }
+            }
+        }
+        /// <summary>
+        /// function to initiate inner cam feed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RecordInnerCamFeed_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(SerialNo.Text))
+            {
+                MessageBox.Show("Enter serial number");
+            }
+            else
+            {
+                try
+                {
+                    if (recInnerVdo != null)
+                    {
+                        RecordInnerCamFeed.Content = "Record cam feed";
+                        recInnerVdo?.StopRecording();
+                        recInnerVdo = null;
+                    }
+                    else
+                    {
+                        if (CheckAlreadyExisting())
+                        {
+                            outerVdoSource?.Stop();
+                            outerVdoSource = null;
+                        }
+                        if (recInnerVdo == null || !recInnerVdo.RecordingStarted())
+                        {
+                            recInnerVdo = new VideoRecorder();
+                            recInnerVdo.SerialNumber = SerialNo.Text;
+                        }
+                        var videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+                        innerVdoSource = new VideoCaptureDevice(videoDevicesList[vdoInnerDeviceList.SelectedIndex].MonikerString);
+                        innerVdoSource.NewFrame += new NewFrameEventHandler(innervideo_NewFrame);
+                        innerVdoSource.Start();
+                        RecordInnerCamFeed.Content = "Recording... (Click to stop)";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    RecordInnerCamFeed.Content = "Record cam feed";
+                }
+            }
+        }
+
+        private void outervideo_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            if (recOuterVdo != null)
+            {
+                if (!recOuterVdo.RecordingStarted())
+                {
+                    recOuterVdo.NewRecording("OV_" + recOuterVdo.SerialNumber, eventArgs.Frame.Width, eventArgs.Frame.Height, 15.0);
+                    recOuterVdo.RecordVideo(eventArgs.Frame);//first frame
+                }
+                else
+                {
+                    recOuterVdo.RecordVideo(eventArgs.Frame);//independent thread to record the video from streamed bitmap frame.
+                }
             }
             // get new frame
             System.Drawing.Image imgforms = (Bitmap)eventArgs.Frame.Clone();
@@ -229,6 +346,18 @@ namespace TQC
 
         private void innervideo_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
+            if (recInnerVdo != null)
+            {
+                if (!recInnerVdo.RecordingStarted())
+                {
+                    recInnerVdo.NewRecording("IV_" + recInnerVdo.SerialNumber, eventArgs.Frame.Width, eventArgs.Frame.Height, 15.0);
+                    recInnerVdo.RecordVideo(eventArgs.Frame);//first frame
+                }
+                else
+                {
+                    recInnerVdo.RecordVideo(eventArgs.Frame);//independent thread to record the video from streamed bitmap frame.
+                }
+            }
 
             // get new frame
             System.Drawing.Image imgforms = (Bitmap)eventArgs.Frame.Clone();
@@ -255,28 +384,12 @@ namespace TQC
         }
         private void vdoInnerDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CheckAlreadyExisting())
-            {
-                outerVdoSource?.Stop();
-                outerVdoSource = null;
-            }
-            var videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            innerVdoSource = new VideoCaptureDevice(videoDevicesList[vdoInnerDeviceList.SelectedIndex].MonikerString);
-            innerVdoSource.NewFrame += new NewFrameEventHandler(innervideo_NewFrame);
-            innerVdoSource.Start();
+            
         }
 
         private void vdoOuterDeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CheckAlreadyExisting())
-            {
-                innerVdoSource?.Stop();
-                innerVdoSource = null;
-            }
-            var videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            outerVdoSource = new VideoCaptureDevice(videoDevicesList[vdoOuterDeviceList.SelectedIndex].MonikerString);
-            outerVdoSource.NewFrame += new NewFrameEventHandler(outervideo_NewFrame);
-            outerVdoSource.Start();
+            
         }
     }
 }

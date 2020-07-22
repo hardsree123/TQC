@@ -38,8 +38,8 @@
         <ComboBox x:Name="vdoInnerDeviceList" HorizontalAlignment="Left" Margin="427,364,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="vdoInnerDeviceList_SelectionChanged" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Height="23" Margin="10,416,0,0" TextWrapping="Wrap" Text="http://localhost:8800/lapcam/poll.php" VerticalAlignment="Top" Width="320" Grid.ColumnSpan="2" Name="outerIPCamUrl"/>
         <TextBox HorizontalAlignment="Left" Height="23" Margin="427,416,0,0" TextWrapping="Wrap" Text="Inner ip cam url" VerticalAlignment="Top" Width="320" x:Name="innerIPCamUrl" Grid.Column="1"/>
-        <Button Content="Stop" Grid.Column="1" HorizontalAlignment="Left" Margin="55,464,0,0" VerticalAlignment="Top" Width="75" Name="StopOuter"/>
-        <Button Content="Stop" Grid.Column="1" HorizontalAlignment="Left" Margin="507,464,0,0" VerticalAlignment="Top" Width="75" Name="StopInner"/>
+        <Button Content="Record cam feed" Grid.Column="1" HorizontalAlignment="Left" Margin="100,364,0,0" VerticalAlignment="Top" Width="105" Name="RecordOuterCamFeed" Click="RecordOuterCamFeed_Click" Height="22"/>
+        <Button Content="Record cam feed" Grid.Column="1" HorizontalAlignment="Left" Margin="552,364,0,0" VerticalAlignment="Top" Width="105" Name="RecordInnerCamFeed" Height="22" Click="RecordInnerCamFeed_Click"/>
 
     </Grid>
 </Window>
