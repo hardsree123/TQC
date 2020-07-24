@@ -156,7 +156,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AzureMediaStreaming.cs" />
     <Compile Include="TyreQCCheckList.cs" />
     <Compile Include="VideoRecorder.cs" />
     <Page Include="MainWindow.xaml">
